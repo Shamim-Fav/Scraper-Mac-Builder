@@ -32,12 +32,11 @@ jobs:
       # Homebrew is used to install the command-line tool needed for professional DMG creation
       run: brew install create-dmg
 
-    - name: 6. Create the Final DMG Installer
+    - name: 6. Create the Final DMG Installer (FIXED: Background removed)
       run: |
-        # The create-dmg tool packages the .app into a standard Mac installer
+        # This command creates a professional .dmg installer with the drag-and-drop experience.
         create-dmg \
           --volname "WSP Scraper Installer" \
-          --background "../.github/installer_background.png" \
           --window-size 500 300 \
           --icon-size 100 \
           --app-drop-link 370 140 \
