@@ -22,24 +22,32 @@ jobs:
         python -m pip install --upgrade pip
         # These are the libraries needed for your script
         pip install pyinstaller undetected-chromedriver selenium pandas
-
+        
     - name: 4. Run PyInstaller Build
       run: |
-        # --onefile: Packages everything into a single folder/file structure
-        # --windowed: Suppresses the black console window on Mac
-        # --name: Sets the output file name
+        # Creates the WSP Scraper.app bundle in the 'dist' folder
         pyinstaller --onefile --windowed --name "WSP Scraper" scraper_gui.py
       
-    - name: 5. Prepare and Archive (Zip) the Application
+    - name: 5. Install DMG Utility (create-dmg)
+      # Homebrew is used to install the command-line tool needed for professional DMG creation
+      run: brew install create-dmg
+
+    - name: 6. Create the Final DMG Installer
       run: |
-        # Navigate to the output directory
-        cd dist
-        # Zip the .app file structure so it can be downloaded easily
-        zip -r "WSP_Scraper_Mac.zip" "WSP Scraper.app"
-        
-    - name: 6. Upload the Zipped Application (Artifact)
+        # The create-dmg tool packages the .app into a standard Mac installer
+        create-dmg \
+          --volname "WSP Scraper Installer" \
+          --background "../.github/installer_background.png" \
+          --window-size 500 300 \
+          --icon-size 100 \
+          --app-drop-link 370 140 \
+          --icon "WSP Scraper.app" 130 140 \
+          "dist/WSP_Scraper_Installer.dmg" \
+          "dist/WSP Scraper.app"
+          
+    - name: 7. Upload the DMG Application (Artifact)
       uses: actions/upload-artifact@v4
       with:
-        name: macos-scraper-app
-        path: dist/WSP_Scraper_Mac.zip
+        name: macos-scraper-installer
+        path: dist/WSP_Scraper_Installer.dmg
         retention-days: 7
